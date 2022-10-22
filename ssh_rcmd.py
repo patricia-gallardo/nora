@@ -1,6 +1,7 @@
-import paramiko
 import shlex
 import subprocess
+
+import paramiko
 
 
 def ssh_command(ip, port, user, passwd, command):

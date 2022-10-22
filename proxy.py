@@ -4,24 +4,7 @@ import sys
 import textwrap
 import threading
 
-HEX_FILTER = ''.join([(len(repr(chr(i))) == 3) and chr(i) or '.' for i in range(256)])
-
-
-def hexdump(src, length=16, show=True):
-    if isinstance(src, bytes):
-        src = src.decode()
-    results = list()
-    for i in range(0, len(src), length):
-        word = str(src[i:i + length])
-        printable = word.translate(HEX_FILTER)
-        hexa = ' '.join(f'{ord(c):02X}' for c in word)
-        hexwidth = length * 3
-        results.append(f'{i:04x}  {hexa:<{hexwidth}}  {printable}')
-    if show:
-        for line in results:
-            print(line)
-    else:
-        return results
+import hexdump
 
 
 def receive_from(connection):
@@ -55,7 +38,7 @@ def proxy_handler(client_socket, remote_host, remote_port, receive_first):
 
     if receive_first:
         remote_buffer = receive_from(remote_socket)
-        hexdump(remote_buffer)
+        hexdump.hexdump(remote_buffer)
 
     remote_buffer = response_handler(remote_buffer)
     if len(remote_buffer):
@@ -68,7 +51,7 @@ def proxy_handler(client_socket, remote_host, remote_port, receive_first):
         if len(local_buffer):
             line = "[==>] Received %d bytes from localhost." % len(local_buffer)
             print(line)
-            hexdump(local_buffer)
+            hexdump.hexdump(local_buffer)
 
             local_buffer = request_handler(local_buffer)
             remote_socket.send(local_buffer)
@@ -78,7 +61,7 @@ def proxy_handler(client_socket, remote_host, remote_port, receive_first):
         if len(remote_buffer):
             line = "[<==] Received %d bytes from remote." % len(remote_buffer)
             print(line)
-            hexdump(remote_buffer)
+            hexdump.hexdump(remote_buffer)
 
             remote_buffer = response_handler(remote_buffer)
             client_socket.send(remote_buffer)

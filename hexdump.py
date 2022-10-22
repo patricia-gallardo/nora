@@ -21,6 +21,13 @@ def hexdump(src, length=16, show=True):
         return results
 
 
+def main(text, run_tests):
+    if run_tests:
+        test()
+    if text:
+        hexdump(text)
+
+
 def test():
     assert (True is True)
 
@@ -30,19 +37,11 @@ if __name__ == '__main__':
         description='Hexdump',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent('''Example:
-        hexdump.py -i AAAAA
+        hexdump.py AAAAA
         0000  41 41 41 41 41                                    AAAAA
         '''))
     parser.add_argument('-t', '--test', action='store_true', help='test')
-    parser.add_argument('-i', '--input', help='input')
+    parser.add_argument('input', help='input')
+    args = parser.parse_args()
 
-
-    def start():
-        args = parser.parse_args()
-        if args.test:
-            test()
-        if args.input:
-            hexdump(args.input)
-
-
-    start()
+    main(args.input, args.test)
